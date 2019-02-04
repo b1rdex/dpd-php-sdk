@@ -1,6 +1,8 @@
 # Client SDK DPD
 Client SDK - SDK для быстрой разработки клиентских решений для сервиса доставки DPD.
 
+### ‼ Это форк https://bitbucket.org/DPDinRussia/dpd.sdk
+
 ### Требования
 
 * PHP 5.4.* или выше
