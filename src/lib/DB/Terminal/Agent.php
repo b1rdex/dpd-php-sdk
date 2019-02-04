@@ -23,7 +23,7 @@ class Agent
 	}
 
 	/**
-	 * @return \Ipol\DPD\User\UserInterface
+	 * @return \Ipol\DPD\API\User\UserInterface
 	 */
 	public function getApi()
 	{
@@ -51,7 +51,8 @@ class Agent
 		$index      = 0;
 		$start_time = time();
 
-		$items = $this->getApi()->getService('geography')->getTerminalsSelfDelivery2() ?: array();
+        $service = $this->getApi()->getService('geography');
+        $items = $service->getTerminalsSelfDelivery2() ?: array();
 		foreach ($items as $item) {
 			if ($index++ < $position) {
 				continue;

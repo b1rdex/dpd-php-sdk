@@ -175,7 +175,7 @@ class Order
 	 * Если оплата идет наложенным платежем будет возвращен аккаунт привязанный к валюте заказа, 
 	 * при условии что он указан. 
 	 * 
-	 * @return \Ipol\DPD\User\UserInterface
+	 * @return \Ipol\DPD\API\User\UserInterface
 	 */
 	public function getApi()
 	{

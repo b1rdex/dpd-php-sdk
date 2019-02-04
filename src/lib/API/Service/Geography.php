@@ -89,7 +89,7 @@ class Geography implements ServiceInterface
 	public function getStoragePeriod(array $terminalCodes = array(), array $serviceCode = array())
 	{
 		return $this->client->invoke('getStoragePeriod', array_filter(array(
-			'terminalCоdes' => implode(',', $terminalCоdes),
+			'terminalCоdes' => implode(',', $terminalCodes),
 			'serviceCode'   => implode(',', $serviceCode)
 		)));
 	}

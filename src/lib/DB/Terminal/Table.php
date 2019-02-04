@@ -97,4 +97,16 @@ class Table extends AbstractTable
 			]
 		]);
 	}
+
+    /**
+     * Возвращает инстанс модели ассоциированной с таблицой
+     *
+     * @return \Ipol\DPD\DB\Terminal\Model
+     */
+    public function makeModel($id = false)
+    {
+        $classname = $this->getModelClass();
+
+        return new $classname($this, $id);
+    }
 }

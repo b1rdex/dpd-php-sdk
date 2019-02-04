@@ -105,4 +105,11 @@ interface TableInterface
      * @return void
      */
     public function checkTableSchema();
+
+    /**
+     * Возвращает инстанс модели ассоциированной с таблицой
+     *
+     * @return \Ipol\DPD\DB\Model
+     */
+    public function makeModel($id = false);
 }

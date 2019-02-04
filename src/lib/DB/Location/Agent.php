@@ -22,7 +22,7 @@ class Agent
 	/**
 	 * Конструктор
 	 * 
-	 * @param \Ipol\DPD\User\UserInterface $api   инстанс API
+	 * @param \Ipol\DPD\API\User\UserInterface $api   инстанс API
 	 * @param \Ipol\DPD\DB\TableInterface  $table инстанс таблицы для записи данных в БД
 	 */
 	public function __construct(UserInterface $api, TableInterface $table)
@@ -32,7 +32,7 @@ class Agent
 	}
 
 	/**
-	 * @return \Ipol\DPD\User\UserInterface
+	 * @return \Ipol\DPD\API\User\UserInterface
 	 */
 	public function getApi()
 	{

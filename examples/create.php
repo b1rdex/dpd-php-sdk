@@ -52,7 +52,8 @@ $shipment->setItems([
     ],
 ], 3000);
 
-$order = \Ipol\DPD\DB\Connection::getInstance($config)->getTable('order')->makeModel();
+$table = \Ipol\DPD\DB\Connection::getInstance($config)->getTable('order');
+$order = $table->makeModel();
 $order->setShipment($shipment);
 
 $order->orderId = 1;

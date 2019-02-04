@@ -55,7 +55,7 @@ class User implements UserInterface
 	 * 
 	 * @param string $alias
 	 * 
-	 * @return \Ipol\DPD\User\UserInterface
+	 * @return \Ipol\DPD\API\User\UserInterface
 	 */
 	public static function getInstanceByAlias($alias)
 	{
@@ -69,7 +69,7 @@ class User implements UserInterface
     /**
 	 * Возвращает инстанс класса с параметрами доступа указанными в настройках
 	 * 
-	 * @return \Ipol\DPD\User\UserInterface
+	 * @return \Ipol\DPD\API\User\UserInterface
 	 */
 	public static function getInstanceByConfig(ConfigInterface $config, $account = false)
 	{
@@ -157,7 +157,7 @@ class User implements UserInterface
 	 * 
 	 * @param  string $serviceName имя службы
 	 * 
-	 * @return \Ipol\API\Service\ServiceInterface
+	 * @return \Ipol\DPD\API\Service\ServiceInterface
 	 */
 	public function getService($serviceName)
 	{

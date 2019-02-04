@@ -51,23 +51,11 @@ abstract class AbstractTable implements TableInterface
     /**
      * Возвращает имя класса модели
      * 
-     * @return array
+     * @return string
      */
     public function getModelClass()
     {
         return \Ipol\DPD\DB\Model::class;
-    }
-
-    /**
-     * Возвращает инстанс модели ассоциированной с таблицой
-     * 
-     * @return \Ipol\DPD\DB\Model
-     */
-    public function makeModel($id = false)
-    {
-        $classname = $this->getModelClass();
-
-        return new $classname($this, $id);
     }
 
     /**

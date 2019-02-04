@@ -37,7 +37,7 @@ interface UserInterface
     /**
      * Возвращает сервис для работы со службой по ее имени
      * 
-     * @return string
+     * @return \Ipol\DPD\API\Service\ServiceInterface
      */
     public function getService($serviceName);
 

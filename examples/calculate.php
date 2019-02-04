@@ -1,4 +1,4 @@
-<?php<?php
+<?php
 require __DIR__ .'/../src/autoload.php';
 
 $config = new \Ipol\DPD\Config\Config([
