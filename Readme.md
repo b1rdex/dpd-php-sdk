@@ -1,7 +1,7 @@
 # Client SDK DPD
 Client SDK - SDK для быстрой разработки клиентских решений для сервиса доставки DPD.
 
-### ‼ Это форк https://bitbucket.org/DPDinRussia/dpd.sdk
+### :heavy_exclamation_mark::heavy_exclamation_mark: Это форк https://bitbucket.org/DPDinRussia/dpd.sdk
 
 ### Требования
 
