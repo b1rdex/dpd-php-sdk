@@ -10,8 +10,12 @@ use \Ipol\DPD\API\Client\Factory as ClientFactory;
 class Tracking implements ServiceInterface
 {
 	protected $wdsl = 'http://ws.dpd.ru/services/tracing?wsdl';
+    /**
+     * @var \Ipol\DPD\API\Client\ClientInterface
+     */
+    private $client;
 
-	/**
+    /**
      * Конструктор класса
      * 
      * @param \Ipol\DPD\API\User\UserInterface

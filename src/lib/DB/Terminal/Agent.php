@@ -10,7 +10,16 @@ use \Ipol\DPD\Utils;
  */
 class Agent
 {
-	/**
+    /**
+     * @var \Ipol\DPD\API\User\UserInterface
+     */
+    private $api;
+    /**
+     * @var \Ipol\DPD\DB\TableInterface
+     */
+    private $table;
+
+    /**
 	 * Конструктор
 	 * 
 	 * @param \Ipol\DPD\API\User\UserInterface $api   инстанс API
@@ -234,7 +243,7 @@ class Agent
 	 * @param array  $schedule  график работы
 	 * @param string $operation операция для фильтрации
 	 * 
-	 * @return string
+	 * @return array
 	 */
 	protected function normalizeSchedule($schedule, $operation)
 	{
@@ -313,7 +322,7 @@ class Agent
 			$extraServices = array_key_exists('ES_CODE', $item['EXTRA_SERVICE']) ? array($item['EXTRA_SERVICE']) : $item['EXTRA_SERVICE'];
 
 			foreach ($extraServices as $extraService) {
-				if ($extraService['ES_CODE'] == 'НПП') {
+				if ($extraService['ES_CODE'] === 'НПП') {
 					return isset($extraService['PARAMS']['VALUE']) ? $extraService['PARAMS']['VALUE'] : 9999999999;
 				}
 			}

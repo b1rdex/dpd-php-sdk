@@ -3,6 +3,7 @@ namespace Ipol\DPD;
 
 use \Ipol\DPD\API\User as API;
 use \Ipol\DPD\Config\ConfigInterface;
+use PDO;
 
 /**
  * Класс содержит набор готовых методов реализующих выполнение периодических

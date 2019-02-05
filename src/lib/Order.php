@@ -216,7 +216,7 @@ class Order
 					throw new \Exception('Терминал назначения не найден');
 				}
 
-				if ($this->model->npp == 'Y' && !$terminal->checkShipmentPayment($shipment)) {
+				if ($this->model->npp === 'Y' && !$terminal->checkShipmentPayment($shipment)) {
 					throw new \Exception('Терминал назначения не может принять наложенный платеж');
 				}
 			}
@@ -237,7 +237,7 @@ class Order
 					'CARGO_NUM_PACK'        => $this->model->cargoNumPack,
 					'CARGO_WEIGHT'          => $this->model->cargoWeight,
 					'CARGO_VOLUME'          => $this->model->cargoVolume,
-					'CARGO_REGISTERED'      => $this->model->cargoRegistered == 'Y',
+					'CARGO_REGISTERED'      => $this->model->cargoRegistered === 'Y',
 					'CARGO_CATEGORY'        => $this->model->cargoCategory,
 					'DELIVERY_TIME_PERIOD'  => $this->model->deliveryTimePeriod,
 					'RECEIVER_ADDRESS'      => $this->getReceiverInfo(),
@@ -506,7 +506,7 @@ class Order
 			'CONTACT_FIO'   => $this->model->senderFio,
 			'CONTACT_PHONE' => $this->model->senderPhone,
 			'CONTACT_EMAIL' => $this->model->senderEmail,
-			'NEED_PASS'     => $this->model->senderNeedPass == 'Y' ? 1 : 0,
+			'NEED_PASS'     => $this->model->senderNeedPass === 'Y' ? 1 : 0,
 		);
 
 		if ($this->model->getShipment()->getSelfPickup()) {
@@ -544,7 +544,7 @@ class Order
 			'CONTACT_FIO'   => $this->model->receiverFio,
 			'CONTACT_PHONE' => $this->model->receiverPhone,
 			'CONTACT_EMAIL' => $this->model->receiverEmail,
-			'NEED_PASS'     => $this->model->receiverNeedPass == 'Y' ? 1 : 0,
+			'NEED_PASS'     => $this->model->receiverNeedPass === 'Y' ? 1 : 0,
 			'INSTRUCTIONS'  => $this->model->receiverComment,
 		);
 
@@ -600,19 +600,19 @@ class Order
 			$ret['POD'] = array('esCode' => 'ПОД', 'param' => array('name' => 'email', 'value' => $this->model->pod));
 		}
 
-		if ($this->model->dvd == 'Y') {
+		if ($this->model->dvd === 'Y') {
 			$ret['DVD'] = array('esCode' => 'ДВД', 'param' => array());
 		}
 
-		if ($this->model->trm == 'Y') {
+		if ($this->model->trm === 'Y') {
 			$ret['TRM'] = array('esCode' => 'ТРМ', 'param' => array());
 		}
 
-		if ($this->model->prd == 'Y') {
+		if ($this->model->prd === 'Y') {
 			$ret['PRD'] = array('esCode' => 'ПРД', 'param' => array());
 		}
 
-		if ($this->model->vdo == 'Y') {
+		if ($this->model->vdo === 'Y') {
 			$ret['VDO'] = array('esCode' => 'ВДО', 'param' => array());
 		}
 
@@ -620,7 +620,7 @@ class Order
 			$ret['OGD'] = array('esCode' => 'ОЖД', 'param' => array('name' => 'reason_delay', 'value' => $this->model->ogd));
 		}
 
-		if ($this->model->npp == 'Y' && !$this->isToRussia()) {
+		if ($this->model->npp === 'Y' && !$this->isToRussia()) {
 			$ret['NPP'] = array('esCode' => 'НПП', 'param' => array('name' => 'sum_npp', 'value' => $this->model->sumNpp));
 		}
 
@@ -637,7 +637,7 @@ class Order
 		$items = $this->model->getShipment()->getItems();
 
 		$orderAmount = $this->model->price;
-		$sumNpp      = $this->model->npp == 'Y' ? $this->model->sumNpp : 0;
+		$sumNpp      = $this->model->npp === 'Y' ? $this->model->sumNpp : 0;
 		$cargoValue  = $this->model->cargoValue ?: 0;
 
 		$currencyFrom = $this->model->currency;
@@ -652,7 +652,7 @@ class Order
 			$nppAmount     = 0;
 			
 			if ($item['VAT_RATE'] 
-				&& $item['VAT_RATE'] != 'Без НДС'
+				&& $item['VAT_RATE'] !== 'Без НДС'
 			) {
 				$withOutVat = 0;
 				$vatRate    = $item['VAT_RATE'];
@@ -697,8 +697,8 @@ class Order
 	{
 		$location = $this->model->getShipment()->getReceiver();
 
-		return (isset($location['COUNTRY_CODE']) && mb_strtoupper($location['COUNTRY_CODE']) == 'RU')
-			|| mb_strtolower($location['COUNTRY_NAME']) == 'россия'
+		return (isset($location['COUNTRY_CODE']) && mb_strtoupper($location['COUNTRY_CODE']) === 'RU')
+			|| mb_strtolower($location['COUNTRY_NAME']) === 'россия'
 		;
 	}
 }

@@ -14,5 +14,14 @@ interface ClientInterface
 	 * @param  string $wrap
 	 * @return mixed
 	 */
-	public function invoke($method, array $args = array(), $wrap = 'request');
+	public function invoke($method, array $args = array(), $wrap = 'request', $keys = false);
+
+    /**
+     * Устанавливает время жизни кэша
+     *
+     * @param int $cacheTime
+     *
+     * @return self
+     */
+    public function setCacheTime($cacheTime);
 }

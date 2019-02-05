@@ -50,7 +50,7 @@ class Agent
 	/**
 	 * Возвращает normalizer адресов
 	 * 
-	 * @return \Ipol\DPD\DB\Location\Normilizer
+	 * @return \Ipol\DPD\DB\Location\Normalizer
 	 */
 	public function getNormalizer()
 	{

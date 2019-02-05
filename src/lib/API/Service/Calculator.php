@@ -10,8 +10,12 @@ use \Ipol\DPD\API\Client\Factory as ClientFactory;
 class Calculator implements ServiceInterface
 {
 	protected $wdsl = 'http://ws.dpd.ru/services/calculator2?wsdl';
+    /**
+     * @var \Ipol\DPD\API\Client\ClientInterface
+     */
+    private $client;
 
-	/**
+    /**
      * Конструктор класса
      * 
      * @param \Ipol\DPD\API\User\UserInterface

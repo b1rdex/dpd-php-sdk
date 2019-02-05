@@ -8,7 +8,10 @@
         "dpd soap"
     ],
     "require": {
-        "php": ">=5.5"
+        "php": ">=5.5",
+        "ext-soap": "*",
+        "ext-mbstring": "*",
+        "ext-iconv": "*"
     },
     "require-dev": {
         "phpdocumentor/phpdocumentor": "~2.8.0"

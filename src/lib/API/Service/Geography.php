@@ -12,8 +12,12 @@ class Geography implements ServiceInterface
 	protected $wdsl = 'http://ws.dpd.ru/services/geography2?wsdl';
 
 	protected $clientOld;
+    /**
+     * @var \Ipol\DPD\API\Client\ClientInterface
+     */
+    private $client;
 
-	/**
+    /**
      * Конструктор класса
      * 
      * @param \Ipol\DPD\API\User\UserInterface
