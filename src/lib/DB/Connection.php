@@ -24,7 +24,15 @@ class Connection implements ConnectionInterface
      * @var array
      */
     protected $tables = array();
-    
+    /**
+     * @var \Ipol\DPD\Config\ConfigInterface
+     */
+    private $config;
+    /**
+     * @var \PDO|null
+     */
+    private $pdo;
+
     /**
      * Возвращает инстанс подключения
      * 
@@ -46,7 +54,13 @@ class Connection implements ConnectionInterface
      */
     public function __construct(ConfigInterface $config)
     {
-        $dbConfig = $config->get('DB');
+        $dbConfig = \array_merge([
+            'DNS' => null,
+            'USERNAME' => null,
+            'PASSWORD' => null,
+            'DRIVER' => null,
+            'PDO' => null,
+        ], $config->get('DB'));
         
         $this->config   = $config;
         $this->dsn      = $dbConfig['DSN'];

@@ -1,11 +1,8 @@
 <?php
 require __DIR__ .'/../src/autoload.php';
 
-$config = new \Ipol\DPD\Config\Config([
-    'KLIENT_NUMBER'   => '1001027795',
-    'KLIENT_KEY'      => '182A17BD6FC5557D1FCA30FA1D56593EB21AEF88',
-    'KLIENT_CURRENCY' => 'BYN',
-]);
+$options = require __DIR__ .'/config.php';
+$config  = new \Ipol\DPD\Config\Config($options);
 
 $shipment = new \Ipol\DPD\Shipment($config);
 $shipment->setSender('Беларусь', 'Минская область', 'г. Минск');
