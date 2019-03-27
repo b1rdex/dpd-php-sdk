@@ -6,17 +6,14 @@ require __DIR__ .'/vendor/dpd.sdk/src/autoload.php';
 
 use \Ipol\DPD\API\User\User as ApiClient;
 
-$client = new ApiClient(
-    $clientNumber = 'КЛИЕНТСКИЙ_НОМЕР', 
-    $secretKey    = 'ТОКЕН_АВТОРИЗАЦИИ', 
-    $testMode     = true
-);
+$options = require __DIR__ .'/config.php';
+$config  = new \Ipol\DPD\Config\Config($options);
+$client    = \Ipol\DPD\API\User\User::getInstanceByConfig($config);
 
 /**
  *  getCitiesCashPay, Возвращает список городов с возможностью доставки наложенным платежом
  */
 $cities = $client->getService('geography')->getCitiesCashPay($countryCode = 'RU');
-
 
 /**
  * getParcelShops, 

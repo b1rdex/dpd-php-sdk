@@ -1,8 +1,8 @@
 <?php
 namespace Ipol\DPD\API\User;
 
+use Ipol\DPD\API\Service\Tracking11;
 use \Ipol\DPD\Config\ConfigInterface;
-use \Ipol\DPD\Config\Config;
 use Ipol\DPD\API\Service\EventTracking;
 use Ipol\DPD\API\Service\TrackingOrder;
 use Ipol\DPD\API\Service\Tracking;
@@ -27,6 +27,7 @@ class User implements UserInterface
 		'order'          => Order::class,
 		'label-print'    => LabelPrint::class,
 		'tracking'       => Tracking::class,
+		'tracking11'       => Tracking11::class,
 		'tracking-order' => TrackingOrder::class,
 		'event-tracking' => EventTracking::class,
 	);

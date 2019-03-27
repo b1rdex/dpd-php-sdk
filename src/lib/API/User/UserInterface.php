@@ -36,7 +36,11 @@ interface UserInterface
 
     /**
      * Возвращает сервис для работы со службой по ее имени
-     * 
+     *
+     * @see \Ipol\DPD\API\User\User::$classmap
+     *
+     * @param string $serviceName
+     *
      * @return \Ipol\DPD\API\Service\ServiceInterface
      */
     public function getService($serviceName);
