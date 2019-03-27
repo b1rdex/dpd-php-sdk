@@ -40,6 +40,6 @@ class Tracking11 implements ServiceInterface
      */
     public function getStatesByDPDOrder($dpdOrderNr, $pickupYear = null)
     {
-        return $this->client->invoke('getStatesByClient', compact($dpdOrderNr, $pickupYear));
+        return $this->client->invoke('getStatesByDPDOrder', \compact('dpdOrderNr', 'pickupYear'));
     }
 }
