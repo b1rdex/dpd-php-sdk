@@ -4,7 +4,6 @@ namespace PHPSTORM_META {
 
     override(\Ipol\DPD\API\User\UserInterface::getService(0), map([
         'geography' => \Ipol\DPD\API\Service\Geography::class,
-        'geography_old' => \Ipol\DPD\API\Service\GeographyOld::class,
         'calculator' => \Ipol\DPD\API\Service\Calculator::class,
         'order' => \Ipol\DPD\API\Service\Order::class,
         'label-print' => \Ipol\DPD\API\Service\LabelPrint::class,
@@ -15,7 +14,6 @@ namespace PHPSTORM_META {
 
     override(\Ipol\DPD\API\User\User::getService(0), map([
         'geography' => \Ipol\DPD\API\Service\Geography::class,
-        'geography_old' => \Ipol\DPD\API\Service\GeographyOld::class,
         'calculator' => \Ipol\DPD\API\Service\Calculator::class,
         'order' => \Ipol\DPD\API\Service\Order::class,
         'label-print' => \Ipol\DPD\API\Service\LabelPrint::class,

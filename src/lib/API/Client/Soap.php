@@ -78,6 +78,8 @@ class Soap extends \SoapClient implements ClientInterface
 	 * @param  string $keys
 	 * 
 	 * @return mixed
+     *
+     * @throws \SoapFault
 	 */
 	public function invoke($method, array $args = array(), $wrap = 'request', $keys = false)
 	{

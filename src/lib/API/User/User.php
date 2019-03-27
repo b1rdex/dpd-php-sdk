@@ -3,6 +3,13 @@ namespace Ipol\DPD\API\User;
 
 use \Ipol\DPD\Config\ConfigInterface;
 use \Ipol\DPD\Config\Config;
+use Ipol\DPD\API\Service\EventTracking;
+use Ipol\DPD\API\Service\TrackingOrder;
+use Ipol\DPD\API\Service\Tracking;
+use Ipol\DPD\API\Service\LabelPrint;
+use Ipol\DPD\API\Service\Order;
+use Ipol\DPD\API\Service\Calculator;
+use Ipol\DPD\API\Service\Geography;
 
 /**
  * Класс реализует доступ к метода API
@@ -13,14 +20,15 @@ class User implements UserInterface
 	 * @var array
 	 */
 	public static $classmap = array(
-		'geography'      => '\\Ipol\\DPD\\API\\Service\\Geography',
-		'geography_old'  => '\\Ipol\\DPD\\API\\Service\\GeographyOld',
-		'calculator'     => '\\Ipol\\DPD\\API\\Service\\Calculator',
-		'order'          => '\\Ipol\\DPD\\API\\Service\\Order',
-		'label-print'    => '\\Ipol\\DPD\\API\\Service\\LabelPrint',
-		'tracking'       => '\\Ipol\\DPD\\API\\Service\\Tracking',
-		'tracking-order' => '\\Ipol\\DPD\\API\\Service\\TrackingOrder',
-		'event-tracking' => '\\Ipol\\DPD\\API\\Service\\EventTracking',
+		'geography'      => Geography::class,
+		// missing class
+		// 'geography_old'  => '\\Ipol\\DPD\\API\\Service\\GeographyOld',
+		'calculator'     => Calculator::class,
+		'order'          => Order::class,
+		'label-print'    => LabelPrint::class,
+		'tracking'       => Tracking::class,
+		'tracking-order' => TrackingOrder::class,
+		'event-tracking' => EventTracking::class,
 	);
 
 	/**
@@ -42,7 +50,7 @@ class User implements UserInterface
 	public static function isActiveAccount(ConfigInterface $config, $account = false)
 	{
 		$accountLang = $account !== false ? $account : $config->get('API_DEF_COUNTRY');
-		$accountLang = $accountLang == 'RU' ? '' : $accountLang;
+		$accountLang = $accountLang === 'RU' ? '' : $accountLang;
 
 		$clientNumber   = $config->get(trim('KLIENT_NUMBER_'. $accountLang, '_'));
 		$clientKey      = $config->get(trim('KLIENT_KEY_'. $accountLang, '_'));
@@ -74,7 +82,7 @@ class User implements UserInterface
 	public static function getInstanceByConfig(ConfigInterface $config, $account = false)
 	{
 		$accountLang = $account !== false ? $account : $config->get('API_DEF_COUNTRY');
-        $accountLang = $accountLang == 'RU' ? '' : $accountLang;
+        $accountLang = $accountLang === 'RU' ? '' : $accountLang;
         
 		$clientNumber   = $config->get(trim('KLIENT_NUMBER_'. $accountLang, '_'));
 		$clientKey      = $config->get(trim('KLIENT_KEY_'. $accountLang, '_'));

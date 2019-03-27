@@ -17,7 +17,7 @@ class Factory
 	 */
 	public static function create($wdsl, UserInterface $user)
 	{
-		if (class_exists('\\SoapClient')) {
+		if (class_exists(\SoapClient::class)) {
 			return new Soap($wdsl, $user);
 		}
 
