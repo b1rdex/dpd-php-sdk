@@ -3,13 +3,16 @@ namespace Ipol\DPD\API\Client;
 
 use \Ipol\DPD\API\User\UserInterface;
 use \Ipol\DPD\Utils;
+use \Symfony\Component\Cache\Simple\FilesystemCache;
 
 /**
  * Реализация SOAP клиента для работы с API
  */
 class Soap extends \SoapClient implements ClientInterface
 {
-	/**
+    public static $enableCache = false;
+
+    /**
 	 * Параметры авторизации
 	 * @var array
 	 */
@@ -26,10 +29,24 @@ class Soap extends \SoapClient implements ClientInterface
 	protected $initError = false;
 
 	/**
+	 * Кэш
+	 *
+	 * @var \Symfony\Component\Cache\Simple\FilesystemCache|null
+	 */
+	protected $cache;
+
+	/**
+	 * Время жизни кэша
+	 *
+	 * @var integer
+	 */
+	protected $cache_time = 86400;
+
+	/**
 	 * Конструктор класса
-	 * 
+	 *
 	 * @param string                           $wsdl     адрес SOAP-api
-	 * @param \Ipol\DPD\API\User\UserInterface $user     инстанс подключения к API    
+	 * @param \Ipol\DPD\API\User\UserInterface $user     инстанс подключения к API
 	 * @param array                            $options  опции для SOAP
 	 */
 	public function __construct($wsdl, UserInterface $user, array $options = array())
@@ -57,9 +74,9 @@ class Soap extends \SoapClient implements ClientInterface
 
 	/**
 	 * Устанавливает время жизни кэша
-	 * 
+	 *
 	 * @param int $cacheTime
-	 * 
+	 *
 	 * @return self
 	 */
 	public function setCacheTime($cacheTime)
@@ -71,44 +88,52 @@ class Soap extends \SoapClient implements ClientInterface
 
 	/**
 	 * Выполняет запрос к внешнему API
-	 * 
+	 *
 	 * @param  string $method выполняемый метод API
 	 * @param  array  $args   параметры для передачи
 	 * @param  string $wrap   название эл-та обертки
 	 * @param  string $keys
-	 * 
+	 *
 	 * @return mixed
      *
      * @throws \SoapFault
 	 */
 	public function invoke($method, array $args = array(), $wrap = 'request', $keys = false)
 	{
-		$parms   = array_merge($args, array('auth' => $this->auth));
-		$request = $wrap ? array($wrap => $parms) : $parms;
-		$request = $this->convertDataForService($request);
-
-		// $cache_id = serialize($request) . ($keys ? serialize($keys) : '');
-		// $cache_path = '/'. IPOLH_DPD_MODULE .'/api/'. $method;
-
 		if ($this->initError) {
 			throw new \Exception($this->initError);
 		}
 
-		$ret = $this->$method($request);
+		$parms     = array_merge($args, array('auth' => $this->auth));
+		$request   = $wrap ? array($wrap => $parms) : $parms;
+		$request   = $this->convertDataForService($request);
 
-		// hack return binary data
-		if ($ret && isset($ret->return->file)) {
-			return array('FILE' => $ret->return->file);
-		}
+		$cache     = $this->cache();
+		$cache_key = 'api.'. $method .'.'. md5(serialize($request) . ($keys ? serialize($keys) : ''));
 
-		$ret = json_encode($ret);
-		$ret = json_decode($ret, true);
+		if (!$cache || !$cache->has($cache_key)) {
+			$ret = $this->$method($request);
 
-		if (array_key_exists('return', $ret)) {
-			$ret = $ret['return'];
-			$ret = $this->convertDataFromService($ret, $keys);
+			// hack return binary data
+			if ($ret && isset($ret->return->file)) {
+				return array('FILE' => $ret->return->file);
+			}
+
+			$ret = json_encode($ret);
+			$ret = json_decode($ret, true);
+
+			if (array_key_exists('return', $ret)) {
+				$ret = $ret['return'];
+				$ret = $this->convertDataFromService($ret, $keys);
+			} else {
+				$ret = [];
+			}
+
+			if ($cache) {
+				$cache->set($cache_key, $ret);
+			}
 		} else {
-			$ret = [];
+			$ret = $cache->get($cache_key);
 		}
 
 		return $ret;
@@ -116,12 +141,20 @@ class Soap extends \SoapClient implements ClientInterface
 
 	/**
 	 * Возвращает инстанс кэша
-	 * 
-	 * @return 
+	 *
+	 * @return \Symfony\Component\Cache\Simple\FilesystemCache|null
 	 */
 	protected function cache()
 	{
-		return null;
+	    if (!static::$enableCache) {
+	        return null;
+        }
+
+		if ($this->cache === null && class_exists(FilesystemCache::class)) {
+            $this->cache = new FilesystemCache('', $this->cache_time, __DIR__ .'/../../../../data/cache/');
+        }
+
+		return $this->cache;
 	}
 
 	/**
@@ -129,9 +162,9 @@ class Soap extends \SoapClient implements ClientInterface
 	 *
 	 * Под конвертацией понимается:
 	 * - перевод названий параметров в camelCase
-	 * 
-	 * @param  array $data 
-	 * 
+	 *
+	 * @param  array $data
+	 *
 	 * @return array
 	 */
 	protected function convertDataForService($data)
@@ -140,7 +173,7 @@ class Soap extends \SoapClient implements ClientInterface
 		foreach ($data as $key => $value) {
 			$key = Utils::underScoreToCamelCase($key);
 
-			$ret[$key] = is_array($value) 
+			$ret[$key] = is_array($value)
 							? $this->convertDataForService($value)
 							: $value;
 		}
@@ -150,12 +183,12 @@ class Soap extends \SoapClient implements ClientInterface
 
 	/**
 	 * Конвертирует полученные данные в формат модуля
-	 * 
+	 *
 	 * Под конвертацией понимается:
 	 * - перевод названий параметров в UNDER_SCORE
-	 * 
-	 * @param  array $data 
-	 * 
+	 *
+	 * @param  array $data
+	 *
 	 * @return array
 	 */
 	protected function convertDataFromService($data, $keys = false)
@@ -164,7 +197,7 @@ class Soap extends \SoapClient implements ClientInterface
 
 		$ret = array();
 		foreach ($data as $key => $value) {
-			$key = $keys 
+			$key = $keys
 					? implode(':', array_intersect_key($value, $keys))
 					: Utils::camelCaseToUnderScore($key);
 
@@ -190,6 +223,6 @@ class Soap extends \SoapClient implements ClientInterface
 	// 		. 'ANSWER  : '. PHP_EOL . $ret      . PHP_EOL
 	// 	);
 
-	// 	return $ret;	
-	// }	
+	// 	return $ret;
+	// }
 }

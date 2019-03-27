@@ -1,2 +1,4 @@
-vendor/
 composer.lock
+vendor/
+data/cache/
+data/db/data.sq3

@@ -59,6 +59,37 @@ abstract class AbstractTable implements TableInterface
     }
 
     /**
+     * Возвращает инстанс модели ассоциированной с таблицой
+     * 
+     * @return \Ipol\DPD\DB\Model
+     */
+    public function makeModel($id = false)
+    {
+        $classname = $this->getModelClass();
+
+        return new $classname($this, $id);
+    }
+
+    /**
+     * Возвращает список моделей отобранных по условию
+     *
+     * @param array $parms
+     *
+     * @return array
+     */
+    public function findModels($parms)
+    {
+        $items = $this->find($parms);
+        $ret = [];
+
+        while($item = $items->fetch()) {
+            $ret[] = $this->makeModel($item);
+        }
+
+        return $ret;
+    }
+
+    /**
      * Создание таблицы при необходимости
      * 
      * @return void

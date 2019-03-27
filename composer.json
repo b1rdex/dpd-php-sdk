@@ -1,5 +1,5 @@
 {
-    "name": "ipol/dpd",
+    "name": "ipol/dpd.sdk",
     "description": "",
     "license": "MIT",
     "keywords": [
@@ -12,7 +12,8 @@
         "ext-soap": "*",
         "ext-mbstring": "*",
         "ext-iconv": "*",
-        "ext-pdo": "*"
+        "ext-pdo": "*",
+        "symfony/cache": "3.4.x-dev"
     },
     "require-dev": {
         "phpdocumentor/phpdocumentor": "~2.8.0"
