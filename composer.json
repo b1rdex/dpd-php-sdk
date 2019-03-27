@@ -12,8 +12,10 @@
         "ext-soap": "*",
         "ext-mbstring": "*",
         "ext-iconv": "*",
-        "ext-pdo": "*",
-        "symfony/cache": "3.4.x-dev"
+        "ext-pdo": "*"
+    },
+    "suggest": {
+      "symfony/cache": "Allows caching of Soap requests. Use ^3.4|^4.2 versions."
     },
     "require-dev": {
         "phpdocumentor/phpdocumentor": "~2.8.0"
