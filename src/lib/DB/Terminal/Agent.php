@@ -87,7 +87,6 @@ class Agent
 	public function loadLimited($position = 'RU:0')
 	{
 		$position   = explode(':', $position ?: 'RU:0');
-		$index      = 0;
 		$started    = false;
 		$start_time = time();
 
@@ -97,6 +96,7 @@ class Agent
 			}
 
 			$started = true;
+			$index   = 0;
 			$items   = $this->getApi()->getService('geography')->getParcelShops($countryCode) ?: array();
 
 			foreach ($items as $item) {

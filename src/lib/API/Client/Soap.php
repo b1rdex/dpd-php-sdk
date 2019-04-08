@@ -124,6 +124,11 @@ class Soap extends \SoapClient implements ClientInterface
 
 			if (array_key_exists('return', $ret)) {
 				$ret = $ret['return'];
+
+				if ($keys && array_intersect((array) $keys, array_keys($ret))) {
+					$ret = [$ret];
+				}
+
 				$ret = $this->convertDataFromService($ret, $keys);
 			} else {
 				$ret = [];
@@ -150,7 +155,7 @@ class Soap extends \SoapClient implements ClientInterface
 	        return null;
         }
 
-		if ($this->cache === null && class_exists(FilesystemCache::class)) {
+		if ($this->cache === null && $this->cache_time > 0 && class_exists(FilesystemCache::class)) {
             $this->cache = new FilesystemCache('', $this->cache_time, __DIR__ .'/../../../../data/cache/');
         }
 

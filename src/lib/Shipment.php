@@ -245,14 +245,14 @@ class Shipment
 	 */
 	public function setItems($items, $itemsPrice = null, $defaultDimensions = array())
 	{
-		$this->orderItems      = $items;
+		$this->orderItems      = (array) $items;
 		$this->orderItemsPrice = $itemsPrice != null 
 			? $itemsPrice
-			: array_reduce($items, function($ret, $item) {
+			: array_reduce($this->orderItems, function($ret, $item) {
 				return $ret + $item['PRICE'] * $item['QUANTITY'];
 			  }, 0)
 		;
-		$this->dimensions      = $this->calcShipmentDimensions($items, $defaultDimensions);
+		$this->dimensions      = $this->calcShipmentDimensions($this->orderItems, $defaultDimensions);
 
 		return $this;
 	}
@@ -550,6 +550,7 @@ class Shipment
 		$defaultDimensions['VOLUME'] = $defaultDimensions['WIDTH'] * $defaultDimensions['HEIGHT'] * $defaultDimensions['LENGTH'];
 		$needCheckWeight     = false;
 		$needCheckDimensions = false;
+		$needCheckVolume     = false;
 
 
 		if ($items) {

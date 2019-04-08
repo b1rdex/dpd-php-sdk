@@ -1,7 +1,7 @@
 <?php
 namespace Ipol\DPD;
 
-use \Ipol\DPD\API\User as API;
+use \Ipol\DPD\API\User\User as API;
 use \Ipol\DPD\Config\ConfigInterface;
 use PDO;
 
@@ -44,7 +44,7 @@ class Agents
 			'bind'  => [
 				':order_status' => \Ipol\DPD\Order::STATUS_PENDING
 			]
-		])->fetchAll(PDO::FETCH_CLASS|PDO::FETCH_PROPS_LATE, $table->getModelClass(), $table);
+		])->fetchAll(\PDO::FETCH_CLASS|\PDO::FETCH_PROPS_LATE, $table->getModelClass(), [$table]);
 		
 		foreach ($orders as $order) {
 			$order->dpd()->checkStatus();
@@ -68,7 +68,7 @@ class Agents
 				return;
 			}
 
-			$states = (array) $ret['STATES'];
+			$states = isset($ret['STATES']) ? $ret['STATES'] : [];
 			$states = array_key_exists('DPD_ORDER_NR', $states) ? array($states) : $states;
 
 			// сортируем статусы по их времени наступления
