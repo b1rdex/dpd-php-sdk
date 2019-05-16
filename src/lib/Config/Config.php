@@ -100,6 +100,11 @@ class Config implements ConfigInterface
              * массив вида [PERSONE_TYPE_ID => bool, ...]
              */
             'COMMISSION_NPP_DEFAULT' => [],
+
+            /**
+             * Название источника заявок в DPD
+             */
+            'SOURCE_NAME' => 'SDK',
         ], $params);
     }
 

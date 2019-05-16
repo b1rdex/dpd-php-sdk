@@ -3,7 +3,7 @@ namespace Ipol\DPD\API\Client;
 
 use \Ipol\DPD\API\User\UserInterface;
 use \Ipol\DPD\Utils;
-use \Symfony\Component\Cache\Simple\FilesystemCache;
+use \Symfony\Component\Cache\Adapter\FilesystemAdapter;
 
 /**
  * Реализация SOAP клиента для работы с API
@@ -31,7 +31,7 @@ class Soap extends \SoapClient implements ClientInterface
 	/**
 	 * Кэш
 	 *
-	 * @var \Symfony\Component\Cache\Simple\FilesystemCache|null
+	 * @var \Symfony\Component\Cache\Adapter\FilesystemAdapter|null
 	 */
 	protected $cache;
 
@@ -108,10 +108,11 @@ class Soap extends \SoapClient implements ClientInterface
 		$request   = $wrap ? array($wrap => $parms) : $parms;
 		$request   = $this->convertDataForService($request);
 
-		$cache     = $this->cache();
 		$cache_key = 'api.'. $method .'.'. md5(serialize($request) . ($keys ? serialize($keys) : ''));
+		$cache     = $this->cache();
+		$cacheItem = $cache ? $cache->getItem($cache_key) : false;
 
-		if (!$cache || !$cache->has($cache_key)) {
+		if (!$cacheItem || !$cacheItem->isHit()) {
 			$ret = $this->$method($request);
 
 			// hack return binary data
@@ -134,11 +135,12 @@ class Soap extends \SoapClient implements ClientInterface
 				$ret = [];
 			}
 
-			if ($cache) {
-				$cache->set($cache_key, $ret);
+			if ($cacheItem) {
+				$cacheItem->set($ret);
+				$cache->save($cacheItem);
 			}
 		} else {
-			$ret = $cache->get($cache_key);
+			$ret = $cacheItem->get();
 		}
 
 		return $ret;
@@ -147,7 +149,7 @@ class Soap extends \SoapClient implements ClientInterface
 	/**
 	 * Возвращает инстанс кэша
 	 *
-	 * @return \Symfony\Component\Cache\Simple\FilesystemCache|null
+	 * @return \Symfony\Component\Cache\Adapter\FilesystemAdapter|null
 	 */
 	protected function cache()
 	{
@@ -155,8 +157,8 @@ class Soap extends \SoapClient implements ClientInterface
 	        return null;
         }
 
-		if ($this->cache === null && $this->cache_time > 0 && class_exists(FilesystemCache::class)) {
-            $this->cache = new FilesystemCache('', $this->cache_time, __DIR__ .'/../../../../data/cache/');
+		if ($this->cache === null && $this->cache_time > 0 && class_exists(FilesystemAdapter::class)) {
+            $this->cache = new FilesystemAdapter('', $this->cache_time, __DIR__ .'/../../../../data/cache/');
         }
 
 		return $this->cache;
@@ -201,7 +203,7 @@ class Soap extends \SoapClient implements ClientInterface
 		$keys = $keys ? array_flip((array) $keys) : false;
 
 		$ret = array();
-		foreach ($data as $key => $value) {
+		foreach ((array) $data as $key => $value) {
 			$key = $keys
 					? implode(':', array_intersect_key($value, $keys))
 					: Utils::camelCaseToUnderScore($key);

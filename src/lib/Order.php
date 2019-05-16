@@ -16,7 +16,27 @@ class Order
 	/**
 	 * Новый заказ, еще не отправлялся в DPD
 	 */
-	const STATUS_NEW             = 'NEW';
+	const STATUS_NEW          = 'NEW';
+
+	/**
+	 * Получена заявка
+	 */
+	const STATUS_OFFER_CREATE = 'OfferCreate';
+
+	/**
+	 * ​В заявке присутствует ошибка
+	 */
+	const STATUS_OFFER_ERROR  = 'OfferUpdating';
+
+	/**
+	 * ​Запрошены паспортные данные получателя
+	 */
+	const STATUS_OFFER_WAITING = 'OfferWaiting';
+
+	/**
+	 * ​Отмена заявки
+	 */
+	const STATUS_OFFER_CANCEL = 'OfferCancelled';
 
 	/**
 	 * Заказ создан в DPD
@@ -29,29 +49,39 @@ class Order
 	const STATUS_PENDING         = 'OrderPending';
 
 	/**
+	 * ​​Заказ ожидает дату приема
+	 */
+	const STATUS_WAITING = 'OrderWaiting';
+
+	/**
 	 * Ошибка с заказом
 	 */
-	const STATUS_ERROR           = 'OrderError';
+	const STATUS_ERROR   = 'OrderError';
 
 	/**
 	 * Заказ отменен
 	 */
-	const STATUS_CANCEL          = 'Canceled';
+	const STATUS_CANCEL  = 'Canceled';
 
 	/**
 	 * Заказ отменен ранее
 	 */
-	const STATUS_CANCEL_PREV     = 'CanceledPreviously';
+	const STATUS_CANCEL_PREV = 'CanceledPreviously';
 
 	/**
 	 * Заказ отменен
 	 */
-	const STATUS_NOT_DONE        = 'NotDone';
+	const STATUS_NOT_DONE = 'NotDone';
 
 	/**
 	 * Заказ принят у отпровителя
 	 */
-	const STATUS_DEPARTURE        = 'OnTerminalPickup';
+	const STATUS_DEPARTURE = 'OnTerminalPickup';
+
+	/**
+	 * Заказ прибыл в страну доставки
+	 */
+	const STATUS_ARRIVED_IN_RF = 'OrderArrivedInRF';
 
 	/**
 	 * Посылка находится в пути (внутренняя перевозка DPD)
@@ -64,14 +94,55 @@ class Order
 	const STATUS_TRANSIT_TERMINAL = 'OnTerminal';
 
 	/**
-	 * Посылка находится на терминале доставки
+	 * ​Заказ готов к выдаче на пункте
+	 */
+	const STATUS_ARRIVE_PICKUP    = 'OnTerminalDeliveryPickup';
+
+	/**
+	 * ​Заказ готов к передаче курьеру для доставки
 	 */
 	const STATUS_ARRIVE           = 'OnTerminalDelivery';
+	const STATUS_ARRIVE_COURIER   = 'OnTerminalDelivery';
+
+	/**
+	 * ​Заказ следует по маршруту до терминала возврата
+	 */
+	const STATUS_TRANSIT_RETURN = 'OnRoadReturn';
+
+	/**
+	 * ​Заказ на возврат готов к передаче  курьеру для доставки
+	 */
+	const STATUS_ARRIVE_COURIER_RETURN  = 'OnTerminalDeliveryReturn';
+
+	/**
+	 *​ Заказ на возврат готов к выдаче
+	 */
+	const STATUS_ARRIVE_PICKUP_RETURN   = 'OnTerminalDeliveryPickupReturn';
+
+	/**
+	 * Таможенное оформление в стране отправления
+	 */
+	const STATUS_CUSTOMS_CLEARANCE = 'CustomClearance';
+
+	/**
+	 * ​Закончено таможенное оформление в стране отправления
+	 */
+	const STATUS_END_CUSTOMS_CLEARANCE = 'EndCustomClearance';
+
+	/**
+	 * ​Закончено таможенное оформление в стране отправления
+	 */
+	const STATUS_END_CUSTOMS_CLEARANCE_IN_RF = 'EndCustomClearanceInRF';
 
 	/**
 	 * Посылка выведена на доставку
 	 */
 	const STATUS_COURIER          = 'Delivering';
+
+	/**
+	 * Посылка выведена на доставку
+	 */
+	const STATUS_COURIER_RETURN   = 'DeliveringReturn';
 
 	/**
 	 * Посылка доставлена получателю
@@ -89,6 +160,11 @@ class Order
 	const STATUS_PROBLEM          = 'Problem';
 
 	/**
+	 * ​Отказ от заказа в момент доставки
+	 */
+	const STATUS_DELIVERY_PROBLEM = 'OrderDeliveryProblem';
+
+	/**
 	 * Посылка возвращена с доставки
 	 */
 	const STATUS_RETURNED         = 'ReturnedFromDelivery';
@@ -102,6 +178,21 @@ class Order
 	 * Оформлен новый заказ по инициативе клиента
 	 */
 	const STATUS_NEW_CLIENT       = 'NewOrderByClient';
+
+	/**
+	 * Передано спецперевозчику
+	 */
+	const STATUS_TRANSIT_SPEC = 'OrderDelivering_2310';
+
+	/**
+	 * ​Заказ утилизирован
+	 */
+	const STATUS_REMOVED = 'OrderWorkCompleted_3301';
+
+	/**
+	 * ​Посылка не востребована
+	 */
+	const STATUS_NOT_CLAIMED = 'OrderWorkCompleted_3302';
 
 	/**
 	 * Оплата у получатела налом
@@ -127,6 +218,11 @@ class Order
 	 * @var \Ipol\DPD\Currency\ConverterInterface
 	 */
 	protected $currencyConverter;
+
+	/**
+	 * @var string
+	 */
+	protected $sourceName;
 
 	/**
 	 * Конструктор класса
@@ -248,6 +344,10 @@ class Order
 					,
 					'CARGO_VALUE'           => $this->isToRussia() ? null : $this->model->cargoValue,
 					'UNIT_LOAD'             => $this->isToRussia() ? $this->getUnits() : null,
+					'EXTRA_PARAM' => array(
+						'NAME'  => 'source_of_order',
+						'VALUE' => $this->getSourceName(),
+					),
 				),
 			);
 
@@ -421,6 +521,30 @@ class Order
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Возвращает название источника
+	 *
+	 * @return string
+	 */
+	public function getSourceName()
+	{
+		return $this->sourceName ?: $this->getConfig()->get('SOURCE_NAME', 'SDK');
+	}
+
+	/**
+	 * Устанавливает название источника
+	 *
+	 * @param string $value
+	 *
+	 * @return self
+	 */
+	public function setSourceName($value)
+	{
+		$this->sourceName = $value;
+
+		return $this;
 	}
 
 	/**
@@ -639,58 +763,35 @@ class Order
 	 */
 	protected function getUnits()
 	{
-		$items = $this->model->getShipment()->getItems();
-
-		$orderAmount = $this->model->price;
-		$sumNpp      = $this->model->npp === 'Y' ? $this->model->sumNpp : 0;
-		$cargoValue  = $this->model->cargoValue ?: 0;
-
 		$currencyFrom = $this->model->currency;
 		$currencyTo   = $this->getApi()->getClientCurrency();
 		$currencyDate = $this->model->orderDate ?: date('Y-m-d H:i:s');
+		$converter    = $this->getCurrencyConverter();
 
-		$ret = array();
-		foreach ($items as $item) {
-			$withOutVat    = 1;
-			$vatRate       = '';
-			$declaredValue = 0;
-			$nppAmount     = 0;
-			
-			if ($item['VAT_RATE'] 
-				&& $item['VAT_RATE'] !== 'Без НДС'
-			) {
-				$withOutVat = 0;
-				$vatRate    = $item['VAT_RATE'];
-			}
+		return array_map(function($item) use ($currencyFrom, $currencyTo, $currencyDate, $converter) {
+			$item['VAT'] = $item['VAT'] === 'Без НДС' ? '' : $item['VAT'];
 
-			$amount         = $item['PRICE'];
-			$percentInOrder = $amount * 100 / $orderAmount;
-			$declaredValue  = $cargoValue > 0 ? $cargoValue * $percentInOrder / 100 : 0;
-			$nppAmount      = $sumNpp > 0 ? $sumNpp * $percentInOrder / 100 : 0;
-			
-			if ($this->getCurrencyConverter()) {
-				$declaredValue = $this->getCurrencyConverter()->convert($declaredValue, $currencyFrom, $currencyTo, $currencyDate);
-				$nppAmount     = $this->getCurrencyConverter()->convert($nppAmount, $currencyFrom, $currencyTo, $currencyDate);
+			if ($converter) {
+				$item['CARGO'] = $converter->convert($item['CARGO'], $currencyFrom, $currencyTo, $currencyDate);
+				$item['NPP']   = $converter->convert($item['NPP'], $currencyFrom, $currencyTo, $currencyDate);
 			} elseif ($currencyFrom != $currencyTo) {
 				throw new \Exception('Currency converter is not defined');
 			}
 
-			$ret[] = array_merge(
+			return array_merge(
 				[
 					'descript'       => $item['NAME'],
-					'declared_value' => round($declaredValue, 2),
-					'npp_amount'     => round($nppAmount, 2),
+					'declared_value' => $item['CARGO'],
+					'npp_amount'     => $item['NPP'],
 					'count'          => $item['QUANTITY'],
 				],
 
-				$withOutVat ? ['without_vat' => $withOutVat] : [],
-				$vatRate    ? ['vat_percent' => $vatRate]    : [],
+				empty($item['VAT']) ? [] : ['vat_percent' => $item['VAT']],
+				empty($item['VAT']) ? ['without_vat' => 1] : [],
 
 				[]
 			);
-		}
-
-		return $ret;
+		}, $this->model->unitLoads);
 	}
 
 	/**

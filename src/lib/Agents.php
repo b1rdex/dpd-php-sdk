@@ -63,48 +63,68 @@ class Agents
 		}
 
 		do {
-			$ret = API::getInstanceByConfig($config)->getService('tracking')->getStatesByClient();
+			$service = API::getInstanceByConfig($config)->getService('event-tracking');
+			$ret = $service->getEvents();
+
 			if (!$ret) {
 				return;
 			}
 
-			$states = isset($ret['STATES']) ? $ret['STATES'] : [];
+			$states = isset($ret['EVENT']) ? $ret['EVENT'] : [];
 			$states = array_key_exists('DPD_ORDER_NR', $states) ? array($states) : $states;
+			$states = array_filter($states, function($item) {
+				return isset($item['CLIENT_ORDER_NR']);
+			});
 
 			// сортируем статусы по их времени наступления
 			uasort($states, function($a, $b) {
 				if ($a['CLIENT_ORDER_NR'] == $b['CLIENT_ORDER_NR']) {
-					$time1 = strtotime($a['TRANSITION_TIME']);
-					$time2 = strtotime($b['TRANSITION_TIME']);
+					$time1 = strtotime($a['EVENT_DATE']);
+					$time2 = strtotime($b['EVENT_DATE']);
 
 					return $time1 - $time2;
 				}
 
-				return $a['CLIENT_ORDER_NR'] - $b['CLIENT_ORDER_NR'];
+				return strcmp($a['CLIENT_ORDER_NR'], $b['CLIENT_ORDER_NR']);
 			});
+
 
 			foreach ($states as $state) {
 				$order = \Ipol\DPD\DB\Connection::getInstance($config)->getTable('order')->getByOrderId($state['CLIENT_ORDER_NR']);
+				
 				if (!$order) {
 					continue;
 				}
 
-				$status = $state['NEW_STATE'];
-				
-				if ($order->isSelfDelivery()
-					&& $status == \Ipol\DPD\Order::STATUS_TRANSIT_TERMINAL
-					&& $order->receiverTerminalCode == $state['TERMINAL_CODE']
-				) {
-					$status = \Ipol\DPD\Order::STATUS_ARRIVE;
+
+				$eventNumber = $state['EVENT_NUMBER'];
+				$eventCode   = $state['EVENT_CODE'] ?: $state['TYPE_CODE'];
+				$eventName   = $state['EVENT_NAME'];
+				$eventReason = isset($state['REASON_NAME']) ? $state['REASON_NAME'] : '';
+				$eventTime   = date('Y-m-d H:i:s', strtotime($state['EVENT_DATE']));
+				$eventParams = [];
+				$number      = $state['DPD_ORDER_NR'];
+
+				$params = isset($state['PARAMETER']['PARAM_NAME'])
+					? [$state['PARAMETER']]
+					: $state['PARAMETER']
+				;
+
+				foreach ($params as $param) {
+					$eventParams[$param['PARAM_NAME']] = $param['VALUE'];
 				}
 
-				$order->setOrderStatus($status, $statusTime);
-				$order->orderNum = $state['DPD_ORDER_NR'] ?: $order->orderNum;
+				if (isset($eventParams['ORDER_NUMBER'])) {
+					$number = $eventParams['ORDER_NUMBER'];
+				}
+
+				$order->setOrderStatusByCode($eventNumber, $eventTime, $eventReason, $eventParams);
+				$order->orderNum = $number ?: $order->orderNum;
 				$order->save();
 			}
 
 			if ($ret['DOC_ID'] > 0) {
-				API::getInstanceByConfig($config)->getService('tracking')->confirm($ret['DOC_ID']);
+				$service->confirm($ret['DOC_ID']);
 			}
 		} while($ret['RESULT_COMPLETE'] != 1);
 	}
