@@ -4,4 +4,4 @@ php:
   - 7.3
 script:
   - composer install
-  - vendor/bin/phptan analyse
+  - vendor/bin/phpstan analyse
