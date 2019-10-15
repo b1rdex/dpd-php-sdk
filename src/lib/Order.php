@@ -46,7 +46,7 @@ class Order
 	/**
 	 * Заказ требует ручной обработки
 	 */
-	const STATUS_PENDING         = 'OrderPending';
+	const STATUS_PENDING = 'OrderPending';
 
 	/**
 	 * ​​Заказ ожидает дату приема
@@ -61,7 +61,7 @@ class Order
 	/**
 	 * Заказ отменен
 	 */
-	const STATUS_CANCEL  = 'Canceled';
+	const STATUS_CANCEL  = 'OrderCancelled';
 
 	/**
 	 * Заказ отменен ранее
@@ -312,7 +312,7 @@ class Order
 					throw new \Exception('Терминал назначения не найден');
 				}
 
-				if ($this->model->npp === 'Y' && !$terminal->checkShipmentPayment($shipment)) {
+				if ($this->model->getSumNpp() > 0 && !$terminal->checkShipmentPayment($shipment)) {
 					throw new \Exception('Терминал назначения не может принять наложенный платеж');
 				}
 			}
@@ -333,7 +333,8 @@ class Order
 					'CARGO_NUM_PACK'        => $this->model->cargoNumPack,
 					'CARGO_WEIGHT'          => $this->model->cargoWeight,
 					'CARGO_VOLUME'          => $this->model->cargoVolume,
-					'CARGO_REGISTERED'      => $this->model->cargoRegistered === 'Y',
+					// 'CARGO_REGISTERED'      => $this->model->cargoRegistered === 'Y',
+					'CARGO_REGISTERED'      => false,
 					'CARGO_CATEGORY'        => $this->model->cargoCategory,
 					'DELIVERY_TIME_PERIOD'  => $this->model->deliveryTimePeriod,
 					'RECEIVER_ADDRESS'      => $this->getReceiverInfo(),
@@ -344,10 +345,10 @@ class Order
 					,
 					'CARGO_VALUE'           => $this->isToRussia() ? null : $this->model->cargoValue,
 					'UNIT_LOAD'             => $this->isToRussia() ? $this->getUnits() : null,
-					'EXTRA_PARAM' => array(
+					'EXTRA_PARAM'           => $this->getSourceName() ? array(
 						'NAME'  => 'source_of_order',
 						'VALUE' => $this->getSourceName(),
-					),
+					) : null,
 				),
 			);
 
@@ -418,7 +419,7 @@ class Order
 
 		} catch (\Exception $e) {
 			$error = new Error($e->getMessage());
-			$result->addError();
+			$result->addError($error);
 		}
 
 		return $result;
@@ -530,7 +531,7 @@ class Order
 	 */
 	public function getSourceName()
 	{
-		return $this->sourceName ?: $this->getConfig()->get('SOURCE_NAME', 'SDK');
+		return $this->sourceName ?: $this->getConfig()->get('SOURCE_NAME', null);
 	}
 
 	/**
@@ -644,7 +645,7 @@ class Order
 			));
 		}
 
-		return array_merge($ret, array(
+		return array_merge($ret, array_filter(array(
 			'COUNTRY_NAME'  => $location['COUNTRY_NAME'],
 			'REGION'        => $location['REGION_NAME'],
 			'CITY'          => $location['CITY_NAME'],
@@ -656,7 +657,7 @@ class Order
 			'VLAD'          => $this->model->senderVlad,
 			'OFFICE'        => $this->model->senderOffice,
 			'FLAT'          => $this->model->senderFlat,
-		));
+		)));
 	}
 
 	/**
@@ -684,7 +685,7 @@ class Order
 			));
 		}
 
-		return array_merge($ret, array(
+		return array_merge($ret, array_filter(array(
 			'COUNTRY_NAME'  => $location['COUNTRY_NAME'],
 			'REGION'        => $location['REGION_NAME'],
 			'CITY'          => $location['CITY_NAME'],
@@ -697,7 +698,7 @@ class Order
 			'OFFICE'        => $this->model->receiverOffice,
 			'FLAT'          => $this->model->receiverFlat,
 			'INSTRUCTIONS'  => $this->model->receiverComment,
-		));
+		)));
 	}
 
 	/**

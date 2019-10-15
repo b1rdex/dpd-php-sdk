@@ -1,57 +1,41 @@
 <?php
 require __DIR__ .'/../src/autoload.php';
 
-$options = require __DIR__ .'/config.php';
+$options = require __DIR__ . '/config.php';
 $config  = new \Ipol\DPD\Config\Config($options);
 
 $shipment = new \Ipol\DPD\Shipment($config);
-$shipment->setSender('Беларусь', 'Минская область', 'г. Минск');
-$shipment->setReceiver('Беларусь', 'Гродненская область', 'г. Лида');
+$shipment->setSender('Россия', 'Москва', 'г. Москва');
+$shipment->setReceiver('Россия', 'Москва', 'г. Москва');
 
-$shipment->setSelfDelivery(true);
-$shipment->setSelfPickup(true);
+$shipment->setSelfPickup(false);
 
 $shipment->setItems([
     [
-        'NAME'       => 'Товар 1',
-        'QUANTITY'   => 1,
-        'PRICE'      => 1000,
-        'VAT_RATE'   => 18,
-        'WEIGHT'     => 1000,
+        'NAME' => 'BMC Велосипед Teamelite TE02 Deore/SLX Size: L Yellow (2017)',
+        'QUANTITY' => 1,
+        'PRICE' => 181200,
+        'VAT_RATE' => 'Без НДС',
+        'WEIGHT' => 17000,
         'DIMENSIONS' => [
-            'LENGTH' => 200,
-            'WIDTH'  => 100,
-            'HEIGHT' => 50,
+            'LENGTH' => 1700,
+            'WIDTH'  => 300,
+            'HEIGHT' => 800
         ]
-    ],
+    ]
 
-    [
-        'NAME'       => 'Товар 2',
-        'QUANTITY'   => 1,
-        'PRICE'      => 1000,
-        'VAT_RATE'   => 18,
-        'WEIGHT'     => 1000,
-        'DIMENSIONS' => [
-            'LENGTH' => 350,
-            'WIDTH'  => 70,
-            'HEIGHT' => 200,
-        ]
-    ],
+], 181200);
 
-    [
-        'NAME'       => 'Товар 3',
-        'QUANTITY'   => 1,
-        'PRICE'      => 1000,
-        'VAT_RATE'   => 18,
-        'WEIGHT'     => 1000,
-        'DIMENSIONS' => [
-            'LENGTH' => 220,
-            'WIDTH'  => 100,
-            'HEIGHT' => 70,
-        ]
-    ],
-], 3000);
 
+
+echo '<pre>';
+print 'До двери';
+$shipment->setSelfDelivery(false);
+$tariff = $shipment->calculator()->calculate();
+print_r($tariff);
+
+print 'До терминала';
+$shipment->setSelfDelivery(true);
 $tariff = $shipment->calculator()->calculate();
 
 print_r($tariff);
