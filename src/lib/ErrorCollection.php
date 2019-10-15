@@ -9,6 +9,7 @@ class ErrorCollection extends Dictionary
 	 */
 	public function __construct(array $values = null)
 	{
+	    parent::__construct();
 		if($values)
 		{
 			$this->add($values);

@@ -32,6 +32,14 @@ class Connection implements ConnectionInterface
      * @var \PDO|null
      */
     private $pdo;
+    /** @var string */
+    private $dsn;
+    /** @var string */
+    private $username;
+    /** @var string */
+    private $password;
+    /** @var string */
+    private $driver;
 
     /**
      * Возвращает инстанс подключения

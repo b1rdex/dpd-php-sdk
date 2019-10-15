@@ -29,8 +29,16 @@ class Shipment
 		'PERSONE_TYPE_ID' => null,
 		'PAY_SYSTEM_ID'   => null,
 	);
+    /**
+     * @var mixed
+     */
+    private $locationFrom;
+    /**
+     * @var mixed
+     */
+    private $locationTo;
 
-	/**
+    /**
 	 * Конструктор класса
 	 * 
 	 * @param \Ipol\DPD\Config\ConfigInterface $config
@@ -638,10 +646,10 @@ class Shipment
 		$z1 = 0;
 		$l  = 0;
 
-		$max1 = floor(Sqrt($qty));
+		$max1 = floor(sqrt($qty));
 		for ($y = 1; $y <= $max1; $y++) {
 			$i = ceil($qty / $y);
-			$max2 = floor(Sqrt($i));
+			$max2 = floor(sqrt($i));
 			for ($z = 1; $z <= $max2; $z++) {
 				$x = ceil($i / $z);
 				$l2 = $x*$ar[0] + $y*$ar[1] + $z*$ar[2];
@@ -739,9 +747,9 @@ class Shipment
 		}
 
 		return array_merge($ret, array(
-			'LENGTH' => $length = Round($a[$n-1]['X'], 2),
-			'WIDTH'  => $width  = Round($a[$n-1]['Y'], 2),
-			'HEIGHT' => $height = Round($a[$n-1]['Z'], 2),
+			'LENGTH' => $length = round($a[$n-1]['X'], 2),
+			'WIDTH'  => $width  = round($a[$n-1]['Y'], 2),
+			'HEIGHT' => $height = round($a[$n-1]['Z'], 2),
 			'VOLUME' => $width * $height * $length,
 		));
 	}

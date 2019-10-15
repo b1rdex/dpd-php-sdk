@@ -33,10 +33,8 @@ class Agents
 
 	/**
 	 * Проверяет статусы заказов ожидающих проверки
-	 * 
-	 * @return void
 	 */
-	protected static function checkPindingOrderStatus(ConfigInterface $config)
+	protected static function checkPindingOrderStatus(ConfigInterface $config): array
 	{
 		$ret    = [];
 		$table  = \Ipol\DPD\DB\Connection::getInstance($config)->getTable('order');
@@ -60,10 +58,8 @@ class Agents
 
 	/**
 	 * Проверяет статусы заказов прошедшие проверку
-	 * 
-	 * @return void
 	 */
-	protected static function checkTrakingOrderStatus(ConfigInterface $config)
+	protected static function checkTrakingOrderStatus(ConfigInterface $config): array
 	{
 		$result = [];
 

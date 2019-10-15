@@ -17,8 +17,12 @@ class Calculator
 	protected $shipment;
 
 	protected $currencyConverter;
+	/** @var string */
+    private $defaultTariffCode;
+    /** @var float */
+    private $minCostWhichUsedDefTariff;
 
-	/**
+    /**
 	 * Возвращает список поддерживаемых тарифов
 	 *
 	 * @return array

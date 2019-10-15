@@ -200,7 +200,7 @@ class Model implements \ArrayAccess
 	 */
 	public function __get($prop)
 	{
-		$method = 'get'. Utils::UnderScoreToCamelCase($prop, true);
+		$method = 'get'. Utils::underScoreToCamelCase($prop, true);
 		if (method_exists($this, $method)) {
 			return $this->$method();
 		}
@@ -223,7 +223,7 @@ class Model implements \ArrayAccess
 	 */
 	public function __set($prop, $value)
 	{
-		$method = 'set'. Utils::UnderScoreToCamelCase($prop, true);
+		$method = 'set'. Utils::underScoreToCamelCase($prop, true);
 		if (method_exists($this, $method)) {
 			return $this->$method($value);
 		}

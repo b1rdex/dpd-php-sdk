@@ -23,7 +23,7 @@ class Soap extends \SoapClient implements ClientInterface
 	 * @var array
 	 */
 	protected $soap_options = array(
-		'connection_timeout' => 20,
+		'connection_timeout' => 5,
 	);
 
 	protected $initError = false;
@@ -113,7 +113,7 @@ class Soap extends \SoapClient implements ClientInterface
 		$cacheItem = $cache ? $cache->getItem($cache_key) : false;
 
 		if (!$cacheItem || !$cacheItem->isHit()) {
-			$ret = $this->$method($request);
+		    $ret = $this->doRequest($method, $request);
 
 			// hack return binary data
 			if ($ret && isset($ret->return->file)) {
@@ -232,4 +232,20 @@ class Soap extends \SoapClient implements ClientInterface
 
 	// 	return $ret;
 	// }
+
+    /**
+     * @return mixed
+     */
+    private function doRequest(string $method, array $request)
+    {
+        ini_set('default_socket_timeout', 10);
+
+        try {
+            $result = $this->__soapCall($method, $request);
+        } finally {
+            ini_restore('default_socket_timeout');
+        }
+
+        return $result;
+    }
 }

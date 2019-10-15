@@ -2,7 +2,7 @@
 // вначале нужно либо склонировать сдк в папку vendor
 // git clone https://bitbucket.org/DPDinRussia/dpd.sdk.git vendor/dpd.sdk
 
-require __DIR__ .'/vendor/dpd.sdk/src/autoload.php';
+require __DIR__ .'/vendor/autoload.php';
 
 use \Ipol\DPD\API\User\User as ApiClient;
 

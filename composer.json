@@ -8,7 +8,7 @@
         "dpd soap"
     ],
     "require": {
-        "php": ">=5.5",
+        "php": "^7.2|^7.3",
         "ext-soap": "*",
         "ext-mbstring": "*",
         "ext-iconv": "*",
@@ -18,7 +18,7 @@
       "symfony/cache": "Allows caching of Soap requests. Use ^3.4|^4.2 versions."
     },
     "require-dev": {
-        "phpdocumentor/phpdocumentor": "~2.8.0"
+        "phpstan/phpstan": "^0.11.16"
     },
     "autoload": {
         "psr-4": {

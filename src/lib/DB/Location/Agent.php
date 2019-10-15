@@ -101,8 +101,8 @@ class Agent
 					throw new \Exception('Can\'t rename downloaded file');
 				}
 
-			} catch (Exception $e) {
-
+			} catch (\Exception $e) {
+                // ignore exception?
 			}
 		}
 

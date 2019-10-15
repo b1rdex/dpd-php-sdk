@@ -1,0 +1,25 @@
+
+# language=file-reference
+includes:
+  - vendor/phpstan/phpstan/conf/config.level0.neon
+parameters:
+  paths:
+    - src/
+  bootstrap: vendor/autoload.php
+  reportUnmatchedIgnoredErrors: false
+  polluteScopeWithLoopInitialAssignments: false
+  polluteScopeWithAlwaysIterableForeach: false
+  checkAlwaysTrueCheckTypeFunctionCall: true
+  checkAlwaysTrueInstanceof: true
+  checkAlwaysTrueStrictComparison: true
+  checkExplicitMixedMissingReturn: true
+  checkFunctionNameCase: true
+  reportMaybesInMethodSignatures: false
+  reportStaticMethodSignatures: true
+  inferPrivatePropertyTypeFromConstructor: true
+  dynamicConstantNames:
+  earlyTerminatingMethodCalls:
+  excludes_analyse:
+    - 'src/lib/API/Client/Factory.php'
+    - 'src/lib/API/Client/Soap.php'
+  ignoreErrors:

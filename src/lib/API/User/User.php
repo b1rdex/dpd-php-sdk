@@ -33,7 +33,7 @@ class User implements UserInterface
 	);
 
 	/**
-	 * @var self
+	 * @var self[]
 	 */
 	protected static $instances = [];
 
