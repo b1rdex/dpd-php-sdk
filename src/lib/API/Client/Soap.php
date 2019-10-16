@@ -241,7 +241,7 @@ class Soap extends \SoapClient implements ClientInterface
         ini_set('default_socket_timeout', 10);
 
         try {
-            $result = $this->__soapCall($method, $request);
+            $result = $this->__soapCall($method, [$request]);
         } finally {
             ini_restore('default_socket_timeout');
         }
