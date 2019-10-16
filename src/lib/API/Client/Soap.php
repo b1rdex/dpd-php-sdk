@@ -238,7 +238,8 @@ class Soap extends \SoapClient implements ClientInterface
      */
     private function doRequest(string $method, array $request)
     {
-        ini_set('default_socket_timeout', 10);
+        $timeout = $method === 'getParcelShops' ? 60 : 15;
+        ini_set('default_socket_timeout', $timeout);
 
         try {
             $result = $this->__soapCall($method, [$request]);
