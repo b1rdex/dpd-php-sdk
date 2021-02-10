@@ -8,7 +8,7 @@
         "dpd soap"
     ],
     "require": {
-        "php": "^7.2|^7.3",
+        "php": ">=7.2",
         "ext-soap": "*",
         "ext-mbstring": "*",
         "ext-iconv": "*",
